@@ -38,6 +38,12 @@ type ToolDetailData = {
   description: string;
   specs: { [key: string]: string };
 };
+// 動画判定用の関数
+const isVideo = (src?: string) => {
+  if (!src) return false;
+  return src.startsWith('data:video') || src.match(/\.(mp4|webm|mov)$/i) !== null;
+};
+
 
 export default function ComparePage() {
   const { items } = useStock();
@@ -304,11 +310,18 @@ export default function ComparePage() {
                           
                           {/* ★修正: 画像表示ロジック */}
                           <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center text-xl overflow-hidden border border-gray-100">
-                             {(item.image?.startsWith('http') || item.image?.startsWith('data:')) ? (
-                               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                             ) : (
-                               <span className="text-xl">{item.image || '📦'}</span>
-                             )}
+                             {isVideo(item.image) ? (
+                        <video 
+                          src={item.image} 
+                          className="w-full h-full object-cover" 
+                          autoPlay 
+                          muted 
+                          loop 
+                          playsInline 
+                        />
+                      ) : (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                      )}
                           </div>
 
                           <div>
