@@ -31,20 +31,51 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
+  // PC用: ホバーで再生
   const handleMouseEnter = () => {
     setIsHovered(true);
-    if (videoRef.current) {
-      videoRef.current.play().catch(e => console.log('Auto-play prevented', e));
+    // スマホ以外ならホバーで再生
+    if (window.matchMedia('(hover: hover)').matches && videoRef.current) {
+      videoRef.current.play().catch(() => {});
     }
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    if (videoRef.current) {
+    if (window.matchMedia('(hover: hover)').matches && videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
     }
   };
+
+  // ★追加: スマホ用 (画面内に入ったら自動再生)
+  useEffect(() => {
+    // ホバーができないデバイス（スマホ・タブレット）のみ実行
+    if (window.matchMedia('(hover: none)').matches && isVideo(src)) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // 画面に入った
+              videoRef.current?.play().catch(() => {});
+            } else {
+              // 画面から出た
+              videoRef.current?.pause();
+            }
+          });
+        },
+        { threshold: 0.6 } // 60%見えたら再生開始
+      );
+
+      if (videoRef.current) {
+        observer.observe(videoRef.current);
+      }
+
+      return () => {
+        observer.disconnect();
+      };
+    }
+  }, [src]);
 
   if (isVideo(src)) {
     return (
@@ -58,11 +89,12 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
           src={src}
           muted 
           loop 
-          playsInline
+          playsInline // スマホでインライン再生するために必須
           className="w-full h-full object-contain"
         />
+        {/* ホバーしていない、かつスマホでない場合にラベルを表示 */}
         {!isHovered && (
-          <div className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded backdrop-blur font-bold z-10 pointer-events-none">
+          <div className="hidden md:block absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded backdrop-blur font-bold z-10 pointer-events-none">
             ▶ Video
           </div>
         )}

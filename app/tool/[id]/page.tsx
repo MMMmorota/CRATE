@@ -366,7 +366,22 @@ export default function ToolDetail() {
         {/* ヒーローセクション */}
         <div className="flex flex-col sm:flex-row gap-6 mb-10">
           <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-2xl flex-shrink-0 shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
-            {tool.image_url?.startsWith('http') || tool.image_url?.startsWith('data:') ? <img src={tool.image_url} alt={tool.name} className="w-full h-full object-cover" /> : <div className="text-5xl sm:text-6xl">{tool.image_url}</div>}
+            {isVideo(tool.image_url) ? (
+              <video 
+                src={tool.image_url} 
+                className="w-full h-full object-cover" 
+                autoPlay 
+                muted 
+                loop 
+                playsInline 
+              />
+            ) : (
+              (tool.image_url?.startsWith('http') || tool.image_url?.startsWith('data:')) ? (
+                <img src={tool.image_url} alt={tool.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="text-5xl sm:text-6xl select-none">{tool.image_url}</div>
+              )
+            )}
           </div>
           <div className="flex-1">
             <h1 className="text-4xl font-black text-gray-900 mb-2">{tool.name}</h1>
