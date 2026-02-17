@@ -3,6 +3,12 @@
 import Link from 'next/link';
 import { useStock } from '../context/StockContext';
 
+// 動画判定用の関数
+const isVideo = (src?: string) => {
+  if (!src) return false;
+  return src.startsWith('data:video') || src.match(/\.(mp4|webm|mov)$/i) !== null;
+};
+
 export default function StockBar() {
   const { items, removeItem } = useStock();
 
@@ -20,14 +26,29 @@ export default function StockBar() {
                 href={`/tool/${item.id}`}
                 className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg p-2 pr-4 hover:bg-gray-100 transition-colors"
               >
-                {/* ★画像表示修正箇所: URL または dataスキーム なら画像を表示 */}
-                <div className="w-10 h-10 bg-white rounded overflow-hidden flex items-center justify-center border border-gray-100">
-                  {(item.image?.startsWith('http') || item.image?.startsWith('data:')) ? (
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                {/* ▼▼▼ 画像・動画・テキストの出し分け (修正版) ▼▼▼ */}
+                <div className="w-10 h-10 bg-white rounded overflow-hidden flex items-center justify-center border border-gray-100 flex-shrink-0">
+                  {isVideo(item.image) ? (
+                    // 1. 動画の場合
+                    <video 
+                      src={item.image} 
+                      className="w-full h-full object-cover" 
+                      autoPlay 
+                      muted 
+                      loop 
+                      playsInline 
+                    />
                   ) : (
-                    <span className="text-xl">{item.image || '📦'}</span>
+                    // 2. 画像URLの場合 (http... または data:...)
+                    (item.image && (item.image.startsWith('http') || item.image.startsWith('data:'))) ? (
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    ) : (
+                      // 3. それ以外 (絵文字など) の場合
+                      <span className="text-xl select-none">{item.image || '📦'}</span>
+                    )
                   )}
                 </div>
+                {/* ▲▲▲ 修正ここまで ▲▲▲ */}
                 
                 <div className="min-w-[80px]">
                   <p className="text-xs font-bold text-gray-900 truncate max-w-[120px]">{item.name}</p>
@@ -42,7 +63,7 @@ export default function StockBar() {
                   e.preventDefault();
                   removeItem(item.id);
                 }}
-                className="absolute -top-2 -right-2 bg-gray-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 shadow-sm"
+                className="absolute -top-2 -right-2 bg-gray-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 shadow-sm z-10"
               >
                 ×
               </button>
