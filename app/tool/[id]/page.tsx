@@ -397,7 +397,7 @@ export default function ToolDetail() {
              <div className="flex gap-4">
                {tool.screenshots.map((shot, idx) => (
                  <div key={idx} className="bg-black overflow-hidden aspect-video rounded-2xl min-w-[300px]">
-                     <SmartMedia src={shot} alt={`Screenshot ${idx}`} />
+                     <SmartMedia src={shot} alt={`Screenshot ${idx}`} autoPlay={false} controls={true} />
                  </div>
                ))}
              </div>
