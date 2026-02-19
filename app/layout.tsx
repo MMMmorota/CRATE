@@ -11,6 +11,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'CRATE - 買い切りツールの道具箱',
   description: 'SaaS疲れのための、買い切り・オフラインツール検索エンジン',
+  verification: {
+    google: '<meta name="google-site-verification" content="ln7MAO9T1qSOeXtXb8mVJ4E8O2D7uWt5qltVsIx_x4I" />', 
+  },
 };
 
 export default function RootLayout({
