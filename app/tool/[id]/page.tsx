@@ -396,9 +396,9 @@ export default function ToolDetail() {
           <div className="mb-10 overflow-x-auto pb-4 scrollbar-hide">
              <div className="flex gap-4">
                {tool.screenshots.map((shot, idx) => (
-                 <div key={idx} className="bg-transparent overflow-hidden aspect-video flex items-center justify-center rounded-2xl">
-                        <SmartMedia src={shot} alt={`Screenshot ${idx}`} />
-                     </div>
+                 <div key={idx} className="bg-black overflow-hidden aspect-video rounded-2xl min-w-[300px]">
+                     <SmartMedia src={shot} alt={`Screenshot ${idx}`} />
+                 </div>
                ))}
              </div>
           </div>
