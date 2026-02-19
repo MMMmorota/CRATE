@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '../../../lib/supabase';
+import SmartMedia from '../../../components/SmartMedia'; // パスは階層に合わせて調整してください
 
 type PlanData = {
   name: string;
