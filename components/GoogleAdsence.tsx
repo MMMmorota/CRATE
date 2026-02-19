@@ -7,15 +7,15 @@ type Props = {
 };
 
 const GoogleAdsense = ({ pId }: Props) => {
+  // 開発環境（自分のPC）では広告を表示しない設定
   if (process.env.NODE_ENV !== "production") {
-    // 開発環境（ローカル）では広告を表示しない
     return null;
   }
 
   return (
     <Script
       async
-      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-${pId}`}
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${pId}`}
       crossOrigin="anonymous"
       strategy="afterInteractive"
     />
