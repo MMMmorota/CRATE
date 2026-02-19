@@ -228,14 +228,13 @@ export default function SubmitPage() {
                   <input required type="text" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder="例: SuperNote" />
                 </div>
                 <div>
-                  <label className={labelClass}>アイコン画像 / 動画</label>
+                  <label className={labelClass}>アイコン画像</label>
                   <div className="flex gap-4 items-start">
                      <div className="flex-1">
                         <label className="block w-full cursor-pointer mb-2">
-                          {/* ▼▼▼ 修正: ここに video/* を追加しました ▼▼▼ */}
-                          <input type="file" accept="image/*,video/*" onChange={(e) => handleFileUpload(e, setIconUrl)} className="hidden" />
+                          <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, setIconUrl)} className="hidden" />
                           <div className={`w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 text-center transition-colors ${uploading ? 'opacity-50 cursor-wait' : ''}`}>
-                            <span className="text-sm font-bold text-black">{uploading ? 'アップロード中...' : '📁 タップしてアイコン/動画をアップロード'}</span>
+                            <span className="text-sm font-bold text-black">{uploading ? 'アップロード中...' : '📁 タップしてアイコンをアップロード'}</span>
                           </div>
                         </label>
                         <input type="text" value={iconUrl} onChange={(e) => setIconUrl(e.target.value)} className={`${inputClass} text-xs`} placeholder="またはURLを直接入力..." />
@@ -274,7 +273,7 @@ export default function SubmitPage() {
                 
                 {/* ギャラリー部分は変更なし（そのまま残してください） */}
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                  <label className={labelClass}>📸 ギャラリー (画像・動画)</label>
+                  <label className={labelClass}>📸 ギャラリー (画像　またはyoutubeリンク)</label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {screenshots.map((shot, idx) => (
                       <div key={idx} className="relative group">
@@ -307,7 +306,7 @@ export default function SubmitPage() {
                             <span>{uploading ? '⏳ 処理中...' : '📁 ファイルを選択 (画像/動画)'}</span>
                             <input
                               type="file"
-                              accept="image/*,video/*"
+                              accept="image/*"
                               className="hidden"
                               disabled={uploading}
                               onChange={async (e) => {
