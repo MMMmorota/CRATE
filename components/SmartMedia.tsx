@@ -7,11 +7,12 @@ type Props = {
 };
 
 export default function SmartMedia({ src, alt = "media", className = "w-full h-full object-cover" }: Props) {
-  // YouTubeのURLからIDを抜き出す魔法の数式（正規表現）
+  // ▼▼▼ より強力になったYouTube判定ロジック ▼▼▼
   const getYouTubeId = (url: string) => {
-    if (!url) return null;
-    const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
-    return (match && match[2].length === 11) ? match[2] : null;
+    if (!url || typeof url !== 'string') return null;
+    // どんな形式のYouTube URLでも11桁のIDを確実に抜き出す最強の数式
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    return match ? match[1] : null;
   };
 
   const youtubeId = getYouTubeId(src);
@@ -21,7 +22,7 @@ export default function SmartMedia({ src, alt = "media", className = "w-full h-f
   if (youtubeId) {
     return (
       <div className={`relative overflow-hidden bg-black pointer-events-none ${className}`}>
-        {/* YouTube特有の黒帯を消すために、150%に拡大して中央配置しています */}
+        {/* YouTube特有の黒帯を消すために、150%に拡大して中央配置 */}
         <iframe
           src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&disablekb=1&playsinline=1`}
           className="absolute top-1/2 left-1/2 w-[150%] h-[150%] -translate-x-1/2 -translate-y-1/2"
