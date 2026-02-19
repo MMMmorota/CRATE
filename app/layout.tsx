@@ -41,8 +41,7 @@ export default function RootLayout({
                 <p className="text-xs text-gray-500 font-bold">© {new Date().getFullYear()} CRATE. All rights reserved.</p>
                 <div className="flex gap-6">
                   <a href="/privacy" className="text-xs text-gray-500 hover:text-gray-900 font-bold transition-colors">プライバシーポリシー</a>
-                  {/* お問い合わせは後で作ります */}
-                  {/* <a href="/contact" className="text-xs text-gray-500 hover:text-gray-900 font-bold transition-colors">お問い合わせ</a> */}
+                  <a href="/contact" className="text-xs text-gray-500 hover:text-gray-900 font-bold transition-colors">お問い合わせ</a>
                 </div>
               </div>
             </footer>
