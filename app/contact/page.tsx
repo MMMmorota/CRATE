@@ -21,7 +21,7 @@ export default function Contact() {
         <div className="w-full flex justify-center py-8">
           <a 
             // ▼ ここにGoogleフォームのURL（https://docs.google.com/forms/d/e/.../viewform）を貼り付けてください ▼
-            href="ここにフォームのURLを貼り付ける" 
+            href="https://forms.gle/jcXDfa5NoN2NqLEE6" 
             target="_blank" 
             rel="noopener noreferrer"
             className="bg-black text-white px-8 py-4 rounded-xl font-bold hover:bg-gray-800 transition-all shadow-lg flex items-center gap-3 transform hover:scale-105"
