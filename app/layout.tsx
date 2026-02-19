@@ -29,7 +29,25 @@ export default function RootLayout({
        { /*<GoogleAdsense pId="ca-pub-0000000000000000" /> */}
         
         <StockProvider>
-          {children}
+          {/* メインコンテンツとフッターを並べるためのラッパー */}
+          <div className="min-h-screen flex flex-col">
+            <div className="flex-1">
+              {children}
+            </div>
+            
+            {/* ▼▼▼ 追加: フッター ▼▼▼ */}
+            <footer className="bg-white border-t border-gray-200 py-8 mt-auto">
+              <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p className="text-xs text-gray-500 font-bold">© {new Date().getFullYear()} CRATE. All rights reserved.</p>
+                <div className="flex gap-6">
+                  <a href="/privacy" className="text-xs text-gray-500 hover:text-gray-900 font-bold transition-colors">プライバシーポリシー</a>
+                  {/* お問い合わせは後で作ります */}
+                  {/* <a href="/contact" className="text-xs text-gray-500 hover:text-gray-900 font-bold transition-colors">お問い合わせ</a> */}
+                </div>
+              </div>
+            </footer>
+            {/* ▲▲▲ 追加ここまで ▲▲▲ */}
+          </div>
         </StockProvider>
       </body>
     </html>
