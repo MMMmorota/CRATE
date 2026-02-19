@@ -7,6 +7,7 @@ import { supabase } from '../../../lib/supabase';
 import CostSimulator from '../../../components/tool/CostSimulator';
 import StockBar from '../../../components/StockBar';
 import { useStock } from '../../../context/StockContext';
+import SmartMedia from '../../../components/SmartMedia';
 
 type PlanData = {
   name: string;
@@ -366,22 +367,7 @@ export default function ToolDetail() {
         {/* ヒーローセクション */}
         <div className="flex flex-col sm:flex-row gap-6 mb-10">
           <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-2xl flex-shrink-0 shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
-            {isVideo(tool.image_url) ? (
-              <video 
-                src={tool.image_url} 
-                className="w-full h-full object-cover" 
-                autoPlay 
-                muted 
-                loop 
-                playsInline 
-              />
-            ) : (
-              (tool.image_url?.startsWith('http') || tool.image_url?.startsWith('data:')) ? (
-                <img src={tool.image_url} alt={tool.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-5xl sm:text-6xl select-none">{tool.image_url}</div>
-              )
-            )}
+           <SmartMedia src={tool.image_url} alt={tool.name} />
           </div>
           <div className="flex-1">
             <h1 className="text-4xl font-black text-gray-900 mb-2">{tool.name}</h1>
@@ -411,19 +397,7 @@ export default function ToolDetail() {
              <div className="flex gap-4">
                {tool.screenshots.map((shot, idx) => (
                  <div key={idx} className="bg-transparent overflow-hidden aspect-video flex items-center justify-center rounded-2xl">
-                        {isVideo(shot) ? (
-                          <video 
-                            src={shot} 
-                            controls 
-                            className="w-full h-full object-contain" // ★修正: 全体表示
-                          />
-                        ) : (
-                          <img 
-                            src={shot} 
-                            alt={`Screenshot ${idx + 1}`} 
-                            className="w-full h-full object-contain hover:scale-105 transition-transform duration-500" // ★修正: 全体表示
-                          />
-                        )}
+                        <SmartMedia src={shot} alt={`Screenshot ${idx}`} />
                      </div>
                ))}
              </div>

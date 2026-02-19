@@ -1,7 +1,11 @@
-import type { Metadata } from 'next';
 import './globals.css';
-import { StockProvider } from '../context/StockContext'; // 👈 追加
-import StockBar from '../components/StockBar';           // 👈 追加
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { StockProvider } from '../context/StockContext';
+// ▼▼▼ 追加: 広告コンポーネントのインポート ▼▼▼
+import GoogleAdsense from '../components/GoogleAdsense';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'CRATE - 買い切りツールの道具箱',
@@ -15,12 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body>
-        {/* アプリ全体をStockProviderで囲む */}
+      <body className={inter.className}>
+        {/* ▼▼▼ 追加: AdSense (ID取得後に書き換える) ▼▼▼ */}
+        {/* 審査に受かったらここに本物のIDを入れる: ca-pub-xxxxxxxxxxxxxxxx */}
+        <GoogleAdsense pId="ca-pub-0000000000000000" /> 
+        
         <StockProvider>
           {children}
-          {/* ストックバーを常に表示 */}
-          <StockBar />
         </StockProvider>
       </body>
     </html>
