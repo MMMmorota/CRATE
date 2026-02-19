@@ -11,6 +11,7 @@ const GoogleAdsense = ({ pId }: Props) => {
   if (process.env.NODE_ENV !== "production") {
     return null;
   }
+//kk
 
   return (
     <Script
