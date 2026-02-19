@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { StockProvider } from '../context/StockContext';
 // ▼▼▼ 追加: 広告コンポーネントのインポート ▼▼▼
-import GoogleAdsense from '../components/GoogleAdsense';
+
+//import GoogleAdsense from '../components/GoogleAdsense';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         {/* ▼▼▼ 追加: AdSense (ID取得後に書き換える) ▼▼▼ */}
         {/* 審査に受かったらここに本物のIDを入れる: ca-pub-xxxxxxxxxxxxxxxx */}
-        <GoogleAdsense pId="ca-pub-0000000000000000" /> 
+       { /*<GoogleAdsense pId="ca-pub-0000000000000000" /> */}
         
         <StockProvider>
           {children}
