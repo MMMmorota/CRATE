@@ -287,7 +287,7 @@ export default function EditPage() {
                         <input type="text" value={iconUrl} onChange={(e) => setIconUrl(e.target.value)} className={`${inputClass} text-xs`} />
                      </div>
                      <div className="w-20 h-20 bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
-                        {iconUrl ? (isVideo(iconUrl) ? <video src={iconUrl} className="w-full h-full object-cover" autoPlay muted loop playsInline /> : <img src={iconUrl} className="w-full h-full object-cover" />) : null}
+                        {iconUrl ? <SmartMedia src={iconUrl} className="w-full h-full object-cover" /> : null}
                      </div>
                   </div>
                 </div>
@@ -308,11 +308,7 @@ export default function EditPage() {
                       <div key={idx} className="relative group">
                          <div className="aspect-video bg-gray-100 rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center relative shadow-sm">
                             {shot ? (
-                              isVideo(shot) ? (
-                                <video src={shot} className="w-full h-full object-contain" controls muted />
-                              ) : (
-                                <img src={shot} className="w-full h-full object-contain" />
-                              )
+                              <SmartMedia src={shot} className="w-full h-full object-contain" />
                             ) : (
                               <span className="text-gray-400 text-xs">No Media</span>
                             )}
