@@ -303,7 +303,7 @@ export default function SubmitPage() {
                          />
                          
                          <label className={`cursor-pointer text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center justify-center mt-2 gap-1 bg-white border border-blue-200 rounded py-2 hover:bg-blue-50 transition-colors ${uploading ? 'opacity-50 cursor-wait' : ''}`}>
-                            <span>{uploading ? '⏳ 処理中...' : '📁 ファイルを選択 (画像/動画)'}</span>
+                            <span>{uploading ? '⏳ 処理中...' : '📁 ファイルを選択 (画像)'}</span>
                             <input
                               type="file"
                               accept="image/*"
