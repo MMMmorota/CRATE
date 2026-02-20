@@ -31,10 +31,8 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  // PC用: ホバーで再生
   const handleMouseEnter = () => {
     setIsHovered(true);
-    // スマホ以外ならホバーで再生
     if (window.matchMedia('(hover: hover)').matches && videoRef.current) {
       videoRef.current.play().catch(() => {});
     }
@@ -48,23 +46,19 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
     }
   };
 
-  // ★追加: スマホ用 (画面内に入ったら自動再生)
   useEffect(() => {
-    // ホバーができないデバイス（スマホ・タブレット）のみ実行
     if (window.matchMedia('(hover: none)').matches && isVideo(src)) {
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              // 画面に入った
               videoRef.current?.play().catch(() => {});
             } else {
-              // 画面から出た
               videoRef.current?.pause();
             }
           });
         },
-        { threshold: 0.6 } // 60%見えたら再生開始
+        { threshold: 0.6 }
       );
 
       if (videoRef.current) {
@@ -89,10 +83,9 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
           src={src}
           muted 
           loop 
-          playsInline // スマホでインライン再生するために必須
+          playsInline
           className="w-full h-full object-contain"
         />
-        {/* ホバーしていない、かつスマホでない場合にラベルを表示 */}
         {!isHovered && (
           <div className="hidden md:block absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded backdrop-blur font-bold z-10 pointer-events-none">
             ▶ Video
@@ -102,7 +95,6 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
     );
   }
 
-  // srcが存在し、かつ動画でない場合の処理
   return (src && isVideo(src) === false && (src.startsWith('http') || src.startsWith('data:'))) ? (
     <div className="w-full h-full bg-gray-50 flex items-center justify-center">
       <img 
@@ -128,6 +120,16 @@ export default function Home() {
   const [filterOneTime, setFilterOneTime] = useState(false);
   const [sortBy, setSortBy] = useState<'recommend' | 'popular' | 'dig' | 'price'>('recommend');
 
+  // ▼▼▼ 追加: ページネーション用の状態 ▼▼▼
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 20; // 1ページあたりの表示数
+
+  // 検索やフィルターが変更されたら、1ページ目に戻す処理
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeTags, filterOneTime, sortBy]);
+  // ▲▲▲ 追加ここまで ▲▲▲
+
   // データ取得
   useEffect(() => {
     const fetchTools = async () => {
@@ -147,7 +149,6 @@ export default function Home() {
     fetchTools();
   }, []);
 
-  // #入力時のタグ候補算出ロジック
   const allTags = Array.from(new Set(tools.flatMap(tool => tool.tags || [])));
   const showSuggestions = searchQuery.trim().startsWith('#');
   const suggestionKeyword = showSuggestions ? searchQuery.trim().slice(1).toLowerCase() : '';
@@ -168,7 +169,7 @@ export default function Home() {
     if (e.key === 'Enter') {
       if (searchQuery.trim().startsWith('#')) {
         e.preventDefault();
-        const newTag = searchQuery.trim().substring(1); // #を取り除く
+        const newTag = searchQuery.trim().substring(1);
         if (newTag && !activeTags.includes(newTag)) {
           setActiveTags([...activeTags, newTag]);
           setSearchQuery('');
@@ -185,12 +186,10 @@ export default function Home() {
   const filteredTools = tools.filter((tool) => {
     const searchTarget = `${tool.name} ${tool.tagline} ${tool.tags?.join(' ') || ''}`.toLowerCase();
     
-    // 文字列検索
     const matchesQuery = searchQuery 
       ? searchTarget.includes(searchQuery.toLowerCase()) 
       : true;
 
-    // タグ検索 (アクティブなタグすべてを含むか)
     const matchesTags = activeTags.length === 0 || activeTags.every(tag => {
       const cleanTag = tag.toLowerCase();
       return (
@@ -199,7 +198,6 @@ export default function Home() {
       );
     });
 
-    // 買い切りフィルター
     const matchesOneTime = filterOneTime 
       ? (tool.price_model === 'one_time' || tool.plans?.some((p:any) => p.type === 'one_time')) 
       : true;
@@ -217,6 +215,20 @@ export default function Home() {
     }
   });
 
+  // ▼▼▼ 追加: 現在のページに表示するツールを切り出す処理 ▼▼▼
+  const totalPages = Math.ceil(sortedTools.length / ITEMS_PER_PAGE);
+  const currentTools = sortedTools.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  // ページ切り替え時のスクロール処理
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  // ▲▲▲ 追加ここまで ▲▲▲
+
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-black font-black text-xl">読み込み中...</div>;
 
   return (
@@ -231,7 +243,6 @@ export default function Home() {
                 掘り出しツールを、<br/><span className="text-orange-600">箱買い</span>しよう。
               </h1>
               
-              {/* 検索バーエリア */}
               <div className="relative w-full z-30">
                  <input 
                    type="text" 
@@ -244,7 +255,6 @@ export default function Home() {
                  />
                  <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 text-xl">🔍</span>
 
-                 {/* タグ候補リスト (入力中のみ表示) */}
                  {showSuggestions && suggestedTags.length > 0 && (
                    <div className="absolute top-full left-4 right-4 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2">
                      <div className="px-4 py-2 bg-gray-50 text-xs font-bold text-gray-400 border-b border-gray-100 flex justify-between">
@@ -267,7 +277,6 @@ export default function Home() {
                  )}
               </div>
 
-              {/* 選択中のタグ表示 */}
               {activeTags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {activeTags.map(tag => (
@@ -300,7 +309,6 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* ソートタブ */}
         <div className="flex space-x-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
           {[
             { id: 'recommend', label: '✨ おすすめ', desc: '失敗しない選択' },
@@ -323,27 +331,23 @@ export default function Home() {
           ))}
         </div>
 
-        {/* ツール一覧 */}
+        {/* ツール一覧 (現在のページ分だけ表示) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {sortedTools.map((tool) => (
+          {currentTools.map((tool) => (
             <Link href={`/tool/${tool.id}`} key={tool.id} className="block group h-full">
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-2xl hover:border-gray-300 transition-all duration-300 overflow-hidden h-full flex flex-col hover:-translate-y-1">
                 
-                {/* 画像エリア */}
                 <div className="h-48 bg-gray-50 overflow-hidden relative border-b border-gray-100">
                   <ToolCardMedia src={tool.image_url} alt={tool.name} />
                   
-                  {/* PV数バッジ */}
                   <div className="absolute top-2 left-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded backdrop-blur font-black pointer-events-none">
                      👀 {tool.view_count || 0}
                   </div>
                 </div>
                 
-                {/* コンテンツエリア */}
                 <div className="p-5 flex flex-col flex-1">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex flex-wrap gap-1 content-start">
-                      {/* プランの種類を表示 */}
                       {Array.from(new Set(tool.plans?.map((p: any) => p.type) || [tool.price_model])).map((type: any) => (
                         <span key={type} className={`inline-block px-2 py-1 text-[10px] font-black rounded uppercase tracking-wider border ${
                           type === 'one_time' ? 'bg-orange-50 text-orange-900 border-orange-200' : 
@@ -385,6 +389,48 @@ export default function Home() {
             <button onClick={() => {setSearchQuery(''); setActiveTags([]); setFilterOneTime(false);}} className="text-blue-600 font-bold text-lg hover:underline hover:text-blue-800 transition-colors">条件をリセットする</button>
           </div>
         )}
+
+        {/* ▼▼▼ 追加: ページネーションUI ▼▼▼ */}
+        {!loading && totalPages > 1 && (
+          <div className="flex flex-wrap justify-center items-center mt-12 gap-2">
+            {/* 前へボタン */}
+            <button
+              onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              ← 前へ
+            </button>
+
+            {/* ページ番号 */}
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide px-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`w-10 h-10 flex items-center justify-center text-sm font-bold rounded-lg transition-all ${
+                    currentPage === page
+                      ? 'bg-black text-white border-black shadow-md transform scale-105'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 hover:border-gray-300'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+
+            {/* 次へボタン */}
+            <button
+              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              次へ →
+            </button>
+          </div>
+        )}
+        {/* ▲▲▲ 追加ここまで ▲▲▲ */}
+
       </div>
       <StockBar />
     </main>
