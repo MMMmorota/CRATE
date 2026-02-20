@@ -240,7 +240,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="flex-1 max-w-2xl">
               <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter leading-none mb-6">
-                掘り出しツールを、<br/><span className="text-orange-600">箱買い</span>しよう。
+                個人開発の<br/><span className="text-orange-600">「名作」</span>を発掘しよう。
               </h1>
               
               <div className="relative w-full z-30">

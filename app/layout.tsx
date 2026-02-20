@@ -9,8 +9,8 @@ import GoogleAdsense from '../components/GoogleAdsense';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CRATE - 買い切りツールの道具箱',
-  description: 'SaaS疲れのための、買い切り・オフラインツール検索エンジン',
+  title: 'CRATE - 個人開発・インディー作品の道具箱',
+  description: 'ゲーム、Webサービス、便利アプリなど、個人開発者やクリエイターの熱意が詰まった作品を集めた検索プラットフォームです。',
   verification: {
     google: 'ln7MAO9T1qSOeXtXb8mVJ4E8O2D7uWt5qltVsIx_x4I', 
   },
@@ -43,6 +43,7 @@ export default function RootLayout({
               <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p className="text-xs text-gray-500 font-bold">© {new Date().getFullYear()} CRATE. All rights reserved.</p>
                 <div className="flex gap-6">
+                  <a href="/about" className="text-xs text-gray-500 hover:text-gray-900 font-bold transition-colors">CRATEについて</a>
                   <a href="/privacy" className="text-xs text-gray-500 hover:text-gray-900 font-bold transition-colors">プライバシーポリシー</a>
                   <a href="/contact" className="text-xs text-gray-500 hover:text-gray-900 font-bold transition-colors">お問い合わせ</a>
                 </div>
