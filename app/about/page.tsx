@@ -2,7 +2,7 @@ import Navbar from '../../components/Navbar';
 import StockBar from '../../components/StockBar';
 
 export const metadata = {
-  title: 'CRATEについて | CRATE - 個人開発・インディー作品の検索サイト',
+  title: 'SEARCRATEについて | SEARCRATE - 個人開発・インディー作品の検索サイト',
   description: 'ゲーム、Webサービス、便利ツールなど、個人開発者やインディークリエイターの熱意が詰まった作品を集めた検索サイトです。',
 };
 
@@ -13,7 +13,7 @@ export default function AboutPage() {
       
       <div className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
         <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight mb-8">
-          CRATEについて
+          SEARCRATEについて
         </h1>
         
         <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-gray-200">
@@ -29,11 +29,11 @@ export default function AboutPage() {
               しかし、そういった<strong className="text-black bg-yellow-100 px-1">「隠れた名作」</strong>の多くは、星の数ほどあるWebサイトやアプリストアの中に埋もれてしまい、本当に必要としている人に届きにくいのが現状です。
             </p>
             <p>
-              CRATE（クレート）は、そんな個人開発の作品にスポットライトを当てるために生まれました。
+              SEARCRATE（search + crate）は、そんな個人開発の作品にスポットライトを当てるために生まれました。
             </p>
             <p>
               無料で遊べるインディーゲーム、買い切りの便利ツール、日々進化していくサブスクリプションのWebサービス。<br />
-              料金形態やジャンルを問わず、クリエイターの<strong className="text-orange-600">「これを作りたい！」</strong>という熱意が詰まった作品を幅広く集めた道具箱（=CRATE）です。
+              料金形態やジャンルを問わず、クリエイターの<strong className="text-orange-600">「これを作りたい！」</strong>という熱意が詰まった作品を幅広く集めた道具箱（=SEARCRATE）です。
             </p>
             <p>
               あなたがまだ知らない、ワクワクするようなツールやゲームとの出会いが、ここにありますように。<br />

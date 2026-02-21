@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'お問い合わせ | CRATE',
+  title: 'お問い合わせ | SEARCRATE',
 };
 
 export default function Contact() {
@@ -11,7 +11,7 @@ export default function Contact() {
         <h1 className="text-3xl font-black text-gray-900 mb-8 border-b pb-4">お問い合わせ</h1>
         
         <p className="text-gray-700 mb-8 text-sm md:text-base leading-relaxed">
-          CRATEに関する不具合のご報告、機能のご要望、掲載内容に関するお問い合わせなどはこちらからお願いいたします。<br />
+          SEARCRATEに関する不具合のご報告、機能のご要望、掲載内容に関するお問い合わせなどはこちらからお願いいたします。<br />
           <span className="text-xs text-gray-500 mt-2 block">
             ※画像やスクリーンショットの添付に対応するため、外部のGoogleフォームへ移動します。
           </span>

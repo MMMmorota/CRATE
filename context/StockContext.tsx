@@ -25,7 +25,7 @@ export function StockProvider({ children }: { children: ReactNode }) {
 
   // 1. 初回読み込み時に、ブラウザの保存領域(localStorage)から復元する
   useEffect(() => {
-    const saved = localStorage.getItem('crate_stock');
+    const saved = localStorage.getItem('SEARCRATE_stock');
     if (saved) {
       setItems(JSON.parse(saved));
     }
@@ -33,7 +33,7 @@ export function StockProvider({ children }: { children: ReactNode }) {
 
   // 2. データが変わるたびに保存する
   useEffect(() => {
-    localStorage.setItem('crate_stock', JSON.stringify(items));
+    localStorage.setItem('SEARCRATE_stock', JSON.stringify(items));
   }, [items]);
 
   // 追加

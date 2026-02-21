@@ -35,7 +35,7 @@ export default function Navbar() {
           
           {/* 1. ロゴ */}
           <Link href="/" className="text-2xl font-black text-black tracking-tighter shrink-0 border-2 border-black px-2 hover:bg-black hover:text-white transition-colors">
-            CRATE
+            SEARCRATE
           </Link>
 
           {/* 2. 検索バー (PC: 常時表示 / スマホ: 非表示) */}

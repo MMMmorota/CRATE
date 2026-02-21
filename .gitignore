@@ -40,7 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-CRATE_ID.txt
+SEARCRATE_ID.txt
 supabase_ID.txt
 git.txt
 構成案.txt

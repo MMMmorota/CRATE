@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'プライバシーポリシー | CRATE',
+  title: 'プライバシーポリシー | SEARCRATE',
 };
 
 export default function PrivacyPolicy() {
@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-xl font-bold text-gray-900 mb-3">1. 広告の配信について</h2>
             <p>
-              当サイト「CRATE」は、第三者配信の広告サービス（Google AdSense等）を利用する予定、または利用しています。<br />
+              当サイト「SEARCRATE」は、第三者配信の広告サービス（Google AdSense等）を利用する予定、または利用しています。<br />
               広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookie（クッキー）を使用することがあります。<br />
               Cookieを無効にする設定およびGoogleアドセンスに関する詳細は「<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">広告 – ポリシーと規約 – Google</a>」をご覧ください。
             </p>

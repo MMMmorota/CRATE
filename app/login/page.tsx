@@ -90,7 +90,7 @@ export default function LoginPage() {
         {/* ロゴ */}
         <div className="text-center mb-8 mt-4">
           <Link href="/" className="text-3xl font-black tracking-tighter text-gray-900 inline-block border-2 border-black p-1 px-2">
-            CRATE
+            SEARCRATE
           </Link>
           <p className="mt-2 text-gray-500 text-sm font-bold">
             {isSignUp ? 'アカウントを作成してツールを投稿しよう' : 'おかえりなさい'}
