@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { supabase } from '../lib/supabase'; // パスが違う場合は微調整してください
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://SEARCRATE-smoky.vercel.app';
+  const baseUrl = 'https://searcrate.com';
 
   // ① Supabaseから登録されているすべてのツールを取得
   const { data: tools } = await supabase
