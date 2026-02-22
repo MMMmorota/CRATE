@@ -14,11 +14,15 @@ export default function PrivacyPolicy() {
           
           <section>
             <h2 className="text-xl font-bold text-gray-900 mb-3">1. 広告の配信について</h2>
-            <p>
+            <p className="mb-2">
               当サイト「SEARCRATE」は、第三者配信の広告サービス（Google AdSense等）を利用する予定、または利用しています。<br />
-              広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookie（クッキー）を使用することがあります。<br />
-              Cookieを無効にする設定およびGoogleアドセンスに関する詳細は「<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">広告 – ポリシーと規約 – Google</a>」をご覧ください。
+              広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookie（クッキー）を使用することがあります。
             </p>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              <li>Google が広告 Cookie を使用することにより、ユーザーが当サイトや他のウェブサイトにアクセスした際の情報に基づいて、Google やそのパートナーが適切な広告をユーザーに表示できます。</li>
+              <li>ユーザーは、<a href="https://myadcenter.google.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Googleアカウントの広告設定ページ</a>で、パーソナライズ広告を無効にすることができます。</li>
+              <li>また、<a href="https://www.aboutads.info/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">www.aboutads.info</a> にアクセスして頂き、パーソナライズ広告に使われる第三者配信事業者の Cookie を無効にすることも可能です。</li>
+            </ul>
           </section>
 
           <section>
