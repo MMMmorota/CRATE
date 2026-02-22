@@ -9,8 +9,8 @@ import GoogleAdsense from '../components/GoogleAdsense';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'SEARCRATE - 個人開発・インディー作品の道具箱',
-  description: 'ゲーム、Webサービス、便利アプリなど、個人開発者やクリエイターの熱意が詰まった作品を集めた検索プラットフォームです。',
+  title: 'SEARCRATE(サークレート) - 個人開発・インディー作品の道具箱',
+  description: 'ゲーム、Webサービス、サイト、便利アプリなど、個人開発者やクリエイターの熱意が詰まった作品を集めた検索プラットフォームです。',
   verification: {
     google: 'ln7MAO9T1qSOeXtXb8mVJ4E8O2D7uWt5qltVsIx_x4I', 
   },
