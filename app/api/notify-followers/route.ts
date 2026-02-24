@@ -2,16 +2,15 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// ★ マスターキーを使ってSupabaseに接続（メールアドレスを取得するため）
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 export async function POST(request: Request) {
   try {
+    // ★ エラー対策: 鍵の準備を関数の中にお引越し ＆ フォールバック(|| '')を追加
+    const resend = new Resend(process.env.RESEND_API_KEY || '');
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    );
+
     const { toolId, toolName, authorId, authorName } = await request.json();
 
     // 1. この作者をフォローしている人のID一覧を取得
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
       .from('follows')
       .select('follower_id')
       .eq('following_id', authorId)
-      .eq('notify_on', true); // ★これを追加
+      .eq('notify_on', true);
 
     if (!follows || follows.length === 0) {
       return NextResponse.json({ success: true, message: 'フォロワーがいません' });
