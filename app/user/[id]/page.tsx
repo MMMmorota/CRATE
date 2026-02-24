@@ -1,5 +1,6 @@
 "use client";
 
+import FollowButton from '@/components/FollowButton';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -64,7 +65,7 @@ export default function UserProfilePage() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto py-12 px-4 flex flex-col items-center text-center">
            
-           {/* ★修正: 画像があれば表示するロジックを追加 */}
+           {/* 画像表示 */}
            <div className="w-24 h-24 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center text-4xl font-bold mb-4 shadow-lg border-4 border-white overflow-hidden">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt={profile.username} className="w-full h-full object-cover" />
@@ -82,7 +83,12 @@ export default function UserProfilePage() {
              <p className="text-gray-400 text-sm">自己紹介はまだありません。</p>
            )}
            
-           <div className="mt-6 flex gap-4 text-sm font-bold text-gray-400 bg-gray-50 px-4 py-2 rounded-full">
+           {/* ★ここに追加！ フォローボタンコンポーネント */}
+           <div className="mt-4 mb-2">
+             <FollowButton targetUserId={userId} />
+           </div>
+
+           <div className="mt-4 flex gap-4 text-sm font-bold text-gray-400 bg-gray-50 px-4 py-2 rounded-full">
               <span>🚀 {tools.length} ツール公開中</span>
            </div>
         </div>

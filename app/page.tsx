@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation'; // ★これを追加！
 import Navbar from '../components/Navbar';
 import { supabase } from '../lib/supabase';
 import StockBar from '../components/StockBar';
@@ -111,6 +112,7 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
 };
 
 export default function Home() {
+  const searchParams = useSearchParams(); // ★この1行を追加します！
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -120,6 +122,12 @@ export default function Home() {
   const [filterOneTime, setFilterOneTime] = useState(false);
   const [sortBy, setSortBy] = useState<'recommend' | 'popular' | 'dig' | 'price'>('recommend');
 
+  useEffect(() => {
+    const query = searchParams.get('q');
+    if (query) {
+      setSearchQuery(query);
+    }
+  }, [searchParams]);
   // ▼▼▼ 追加: ページネーション用の状態 ▼▼▼
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 20; // 1ページあたりの表示数

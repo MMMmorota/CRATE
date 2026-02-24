@@ -170,7 +170,7 @@ export default function SubmitPage() {
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    const { error } = await supabase
+    const { data: newTool, error } = await supabase
       .from('tools')
       .insert([
         {
@@ -190,13 +190,40 @@ export default function SubmitPage() {
           specs: specsJson,
           official_url: officialUrl,
         }
-      ]);
+      ])
+      .select()
+      .single();
 
     if (error) {
       alert('エラー: ' + error.message);
       setLoading(false);
     } else {
-      alert('ツールを掲載しました！🎉');
+      // ▼▼▼ ここから通知システム呼び出しを追加 ▼▼▼
+      try {
+        // 作者（自分）のユーザー名を取得
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', user?.id)
+          .single();
+        
+        // フォロワーへ通知メールを送信（裏側で実行させるので await せずに投げっぱなしでもOK）
+        fetch('/api/notify-followers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            toolId: newTool.id,
+            toolName: name,
+            authorId: user?.id,
+            authorName: profile?.username || 'ユーザー'
+          }),
+        });
+      } catch (notifyError) {
+        console.error('通知の送信に失敗しましたが、投稿は完了しています', notifyError);
+      }
+      // ▲▲▲ 追加ここまで ▲▲▲
+
+      alert('ツールを掲載しました！🎉（フォロワーへの通知も送信されました）');
       router.push('/');
     }
   };

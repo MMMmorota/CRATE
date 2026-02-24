@@ -14,6 +14,8 @@ export default function MyPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false); // 保存中ローディング用
   
+
+  const [notificationOn, setNotificationOn] = useState(true);
   // 編集用ステート
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
@@ -27,7 +29,8 @@ export default function MyPage() {
 
   const [myTools, setMyTools] = useState<any[]>([]);
   const { items: stockedItems, removeItem } = useStock();
-  const [activeTab, setActiveTab] = useState<'stock' | 'published'>('stock');
+  const [activeTab, setActiveTab] = useState<'stock' | 'published' | 'following'>('stock');
+  const [followingList, setFollowingList] = useState<any[]>([]); // ★ 追加: フォローしている人リスト
 
   useEffect(() => {
     const init = async () => {
@@ -50,7 +53,8 @@ export default function MyPage() {
         setEditName(profileData.username || '');
         setEditBio(profileData.bio || '');
 
-        setEditNotification(profileData.notification_on ?? true); // ★追加
+        setEditNotification(profileData.notification_on ?? true); 
+        setNotificationOn(profileData.notification_on ?? true); // ★これを追加！（直接切り替え用）
         // ★追加: 保存されている画像URLをプレビューにセット
         setAvatarPreviewUrl(profileData.avatar_url || null);
       }
@@ -63,6 +67,26 @@ export default function MyPage() {
         .order('created_at', { ascending: false });
       
       if (tools) setMyTools(tools);
+      const { data: followsData } = await supabase
+        .from('follows')
+        .select('*')
+        .eq('follower_id', user.id);
+
+      if (followsData && followsData.length > 0) {
+        const followingIds = followsData.map(f => f.following_id);
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, username, avatar_url')
+          .in('id', followingIds);
+
+        if (profilesData) {
+          const combined = followsData.map(f => {
+            const p = profilesData.find(profile => profile.id === f.following_id);
+            return { ...p, notify_on: f.notify_on };
+          });
+          setFollowingList(combined);
+        }
+      }
       setLoading(false);
     };
     init();
@@ -152,10 +176,46 @@ export default function MyPage() {
     router.push('/');
   };
 
+  const handleToggleBell = async (targetUserId: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+    
+    // サクサク動かすために画面の見た目を先に変える
+    setFollowingList(prev => prev.map(u => 
+      u.id === targetUserId ? { ...u, notify_on: newStatus } : u
+    ));
+
+    // データベースを更新
+    await supabase
+      .from('follows')
+      .update({ notify_on: newStatus })
+      .eq('follower_id', user?.id)
+      .eq('following_id', targetUserId);
+  };
   const copyUserId = () => {
     if (user?.id) {
       navigator.clipboard.writeText(user.id);
       alert("ユーザーIDをコピーしました！");
+    }
+  };
+  const handleToggleNotification = async () => {
+    if (!user) return;
+    const newValue = !notificationOn;
+    
+    // サクサク動かすために、まずは画面の見た目だけを先に変える
+    setNotificationOn(newValue); 
+    setEditNotification(newValue); // モーダルの中のチェックボックスとも同期させる
+
+    // 裏側でデータベースを更新
+    const { error } = await supabase
+      .from('profiles')
+      .update({ notification_on: newValue })
+      .eq('id', user.id);
+
+    if (error) {
+      alert("通知設定の保存に失敗しました");
+      // 失敗したら元の状態に戻す
+      setNotificationOn(!newValue);
+      setEditNotification(!newValue);
     }
   };
 
@@ -195,6 +255,23 @@ export default function MyPage() {
                    >
                      📋 コピー
                    </button>
+                   
+                   {/* ▼▼▼ ここに追加：通知トグルスイッチ ▼▼▼ */}
+                   <div className="flex items-center gap-2 ml-2 pl-2 border-l border-gray-700">
+                     <span className="text-[10px] font-bold text-gray-400">新着通知</span>
+                     <button
+                       onClick={handleToggleNotification}
+                       className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors focus:outline-none ${
+                         notificationOn ? 'bg-blue-500' : 'bg-gray-600'
+                       }`}
+                     >
+                       <span
+                         className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                           notificationOn ? 'translate-x-4' : 'translate-x-1'
+                         }`}
+                       />
+                     </button>
+                   </div>
                  </div>
 
                  <button 
@@ -293,7 +370,9 @@ export default function MyPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 min-h-[500px] overflow-hidden">
           <div className="flex border-b border-gray-200">
             <button onClick={() => setActiveTab('stock')} className={`flex-1 py-4 text-center font-bold text-sm transition-colors ${activeTab === 'stock' ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50' : 'text-gray-500 hover:bg-gray-50'}`}>📦 保留リスト ({stockedItems.length})</button>
-            <button onClick={() => setActiveTab('published')} className={`flex-1 py-4 text-center font-bold text-sm transition-colors ${activeTab === 'published' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-50'}`}>🚀 掲載したツール ({myTools.length})</button>
+            <button onClick={() => setActiveTab('published')} className={`flex-1 py-4 text-center font-bold text-sm transition-colors ${activeTab === 'published' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-50'}`}>🚀 掲載ツール ({myTools.length})</button>
+
+            <button onClick={() => setActiveTab('following')} className={`flex-1 py-4 text-center font-bold text-sm transition-colors ${activeTab === 'following' ? 'text-green-600 border-b-2 border-green-600 bg-green-50' : 'text-gray-500 hover:bg-gray-50'}`}>👥 フォロー中 ({followingList.length})</button>
           </div>
 
           <div className="p-8">
@@ -354,6 +433,37 @@ export default function MyPage() {
                       </div>
                     ))}
                   </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'following' && (
+              <div className="max-w-2xl mx-auto space-y-3">
+                {followingList.length === 0 ? (
+                  <div className="text-center py-20 text-gray-400 font-bold">誰もフォローしていません</div>
+                ) : (
+                  followingList.map((fUser) => (
+                    <div key={fUser.id} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:shadow-sm transition-shadow">
+                      <Link href={`/user/${fUser.id}`} className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-xl overflow-hidden border border-gray-200">
+                          {fUser.avatar_url ? <img src={fUser.avatar_url} className="w-full h-full object-cover"/> : '👤'}
+                        </div>
+                        <span className="font-bold text-gray-900 text-lg hover:underline">{fUser.username || '名称未設定'}</span>
+                      </Link>
+                      
+                      {/* YouTube風のベルマークボタン */}
+                      <button 
+                        onClick={() => handleToggleBell(fUser.id, fUser.notify_on)}
+                        className={`px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 transition-colors ${
+                          fUser.notify_on 
+                            ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' 
+                            : 'bg-white border border-gray-300 text-gray-400 hover:bg-gray-50'
+                        }`}
+                      >
+                        {fUser.notify_on ? '🔔 通知オン' : '🔕 通知オフ'}
+                      </button>
+                    </div>
+                  ))
                 )}
               </div>
             )}
