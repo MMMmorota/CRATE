@@ -2,11 +2,13 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { supabase } from '@/lib/supabase'; // ※Supabaseのパスが違う場合は微調整してください
 
-// .env.localに設定したAPIキーを読み込む
-const resend = new Resend(process.env.RESEND_API_KEY);
+// （外側にあったResendの鍵設定は、下のPOST関数の中に移動しました！）
 
 export async function POST(request: Request) {
   try {
+    // ★ ここに移動！ エラー対策として空っぽの文字（|| ''）もセットしています
+    const resend = new Resend(process.env.RESEND_API_KEY || '');
+
     // 画面側から「ツールID」「ツール名」「送信先メールアドレス」を受け取る
     const { toolId, toolName, userEmail } = await request.json();
 
