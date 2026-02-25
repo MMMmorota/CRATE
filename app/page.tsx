@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react'; // ★ Suspense を追加
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation'; // ★これを追加！
 import Navbar from '../components/Navbar';
@@ -111,8 +111,9 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
   );
 };
 
-export default function Home() {
-  const searchParams = useSearchParams(); // ★この1行を追加します！
+// ★ ここを Home から HomeContent に名前変更しました！
+function HomeContent() {
+  const searchParams = useSearchParams(); 
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -128,7 +129,8 @@ export default function Home() {
       setSearchQuery(query);
     }
   }, [searchParams]);
-  // ▼▼▼ 追加: ページネーション用の状態 ▼▼▼
+  
+  // ページネーション用の状態
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 20; // 1ページあたりの表示数
 
@@ -136,7 +138,6 @@ export default function Home() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, activeTags, filterOneTime, sortBy]);
-  // ▲▲▲ 追加ここまで ▲▲▲
 
   // データ取得
   useEffect(() => {
@@ -223,7 +224,7 @@ export default function Home() {
     }
   });
 
-  // ▼▼▼ 追加: 現在のページに表示するツールを切り出す処理 ▼▼▼
+  // 現在のページに表示するツールを切り出す処理
   const totalPages = Math.ceil(sortedTools.length / ITEMS_PER_PAGE);
   const currentTools = sortedTools.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -235,7 +236,6 @@ export default function Home() {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  // ▲▲▲ 追加ここまで ▲▲▲
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-black font-black text-xl">読み込み中...</div>;
 
@@ -398,10 +398,9 @@ export default function Home() {
           </div>
         )}
 
-        {/* ▼▼▼ 追加: ページネーションUI ▼▼▼ */}
+        {/* ページネーションUI */}
         {!loading && totalPages > 1 && (
           <div className="flex flex-wrap justify-center items-center mt-12 gap-2">
-            {/* 前へボタン */}
             <button
               onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
               disabled={currentPage === 1}
@@ -410,7 +409,6 @@ export default function Home() {
               ← 前へ
             </button>
 
-            {/* ページ番号 */}
             <div className="flex gap-1 overflow-x-auto scrollbar-hide px-2">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <button
@@ -427,7 +425,6 @@ export default function Home() {
               ))}
             </div>
 
-            {/* 次へボタン */}
             <button
               onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
               disabled={currentPage === totalPages}
@@ -437,10 +434,18 @@ export default function Home() {
             </button>
           </div>
         )}
-        {/* ▲▲▲ 追加ここまで ▲▲▲ */}
 
       </div>
       <StockBar />
     </main>
+  );
+}
+
+// ★ 一番下のこの部分はそのままです！
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50 text-black font-black text-xl">読み込み中...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
