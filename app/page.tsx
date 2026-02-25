@@ -169,8 +169,11 @@ function HomeContent() {
       ).slice(0, 8)
     : [];
 
+  // ★ 修正: 同じタグが重複して追加されないように防御！
   const handleSelectTag = (tag: string) => {
-    setActiveTags([...activeTags, tag]);
+    if (!activeTags.includes(tag)) {
+      setActiveTags([...activeTags, tag]);
+    }
     setSearchQuery(''); 
   };
 
@@ -251,14 +254,14 @@ function HomeContent() {
                 個人開発の<br/><span className="text-orange-600">「名作」</span>を発掘しよう。
               </h1>
               
-              <div className="relative w-full z-30">
+              <div className="relative w-full z-30 mb-4">
                  <input 
                    type="text" 
                    value={searchQuery}
                    onChange={(e) => setSearchQuery(e.target.value)}
                    onKeyDown={handleKeyDown}
                    placeholder="キーワード / #タグ (Enterで追加)" 
-                   className="w-full bg-gray-100 border-2 border-transparent focus:bg-white focus:border-black rounded-full py-4 px-6 font-bold text-lg !text-black placeholder:text-gray-500 outline-none transition-all"
+                   className="w-full bg-gray-100 border-2 border-transparent focus:bg-white focus:border-black rounded-full py-4 px-6 font-bold text-lg !text-black placeholder:text-gray-500 outline-none transition-all shadow-sm"
                    style={{ color: '#000000', opacity: 1 }} 
                  />
                  <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 text-xl">🔍</span>
@@ -285,6 +288,21 @@ function HomeContent() {
                  )}
               </div>
 
+              {/* ▼▼▼ 追加: 検索しなくても遊べる人気のカテゴリボタン ▼▼▼ */}
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="text-sm font-bold text-gray-400 mr-1">人気のカテゴリ:</span>
+                {['ゲーム', '便利ツール', 'SaaS', 'AI', '音楽・画像', 'Bot'].map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => handleSelectTag(tag)}
+                    className="px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all hover:-translate-y-0.5 active:translate-y-0 bg-white text-gray-600 border-gray-200 hover:border-black hover:text-black shadow-sm"
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+              {/* ▲▲▲ 追加ここまで ▲▲▲ */}
+
               {activeTags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {activeTags.map(tag => (
@@ -300,7 +318,7 @@ function HomeContent() {
               )}
             </div>
             
-            <div className="flex items-center gap-2 bg-gray-50 px-5 py-4 rounded-xl border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-2 bg-gray-50 px-5 py-4 rounded-xl border border-gray-200 shadow-sm md:mt-0 mt-4 self-start">
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input 
                   type="checkbox" 
