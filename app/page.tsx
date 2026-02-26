@@ -111,6 +111,86 @@ const ToolCardMedia = ({ src, alt }: { src: string, alt: string }) => {
   );
 };
 
+// ▼▼▼ 新規追加: マウスに追従して中身が見える巨大木箱コンポーネント ▼▼▼
+const InteractiveHeroBox = () => {
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [isHovered, setIsHovered] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePos({ x, y });
+  };
+
+  return (
+    <div 
+      className="w-full h-full relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setMousePos({ x: 50, y: 50 }); // 離れたら真ん中に戻す
+      }}
+      onMouseMove={handleMouseMove}
+    >
+      <svg
+        ref={svgRef}
+        viewBox="0 0 100 100"
+        className={`w-full h-full transition-transform duration-500 drop-shadow-2xl ${isHovered ? 'scale-105 cursor-none' : 'scale-100'}`}
+      >
+        <defs>
+          <clipPath id="hero-lens-clip">
+            <circle cx={mousePos.x} cy={mousePos.y} r={isHovered ? "24" : "0"} className="transition-all duration-300 ease-out" />
+          </clipPath>
+        </defs>
+
+        {/* ★変更: 外側の線画を真っ黒(#111827)にしました */}
+        <g stroke="#111827" strokeWidth="3" fill="none" strokeLinejoin="round">
+          <polygon points="50,15 85,35 50,55 15,35" />
+          <polygon points="15,35 50,55 50,95 15,75" />
+          <polygon points="50,55 85,35 85,75 50,95" />
+          <line x1="15" y1="35" x2="50" y2="95" />
+          <line x1="15" y1="75" x2="50" y2="55" />
+          <line x1="50" y1="55" x2="85" y2="75" />
+          <line x1="85" y1="35" x2="50" y2="95" />
+        </g>
+
+        <g clipPath="url(#hero-lens-clip)">
+          <circle cx={mousePos.x} cy={mousePos.y} r="24" fill="#111827" />
+          <g stroke="#111827" strokeWidth="3" strokeLinejoin="round">
+            <polygon points="50,15 85,35 50,55 15,35" fill="#D97706" />
+            <polygon points="15,35 50,55 50,95 15,75" fill="#B45309" />
+            <polygon points="50,55 85,35 85,75 50,95" fill="#92400E" />
+            <line x1="15" y1="35" x2="50" y2="95" stroke="#F59E0B" strokeWidth="2.5" />
+            <line x1="15" y1="75" x2="50" y2="55" stroke="#F59E0B" strokeWidth="2.5" />
+            <line x1="50" y1="55" x2="85" y2="75" stroke="#F59E0B" strokeWidth="2.5" />
+            <line x1="85" y1="35" x2="50" y2="95" stroke="#F59E0B" strokeWidth="2.5" />
+          </g>
+        </g>
+
+        {isHovered && (
+          <g className="pointer-events-none">
+            <circle cx={mousePos.x} cy={mousePos.y} r="24" stroke="#111827" strokeWidth="3" fill="none" />
+            <line x1={mousePos.x + 16} y1={mousePos.y + 16} x2={mousePos.x + 28} y2={mousePos.y + 28} stroke="#111827" strokeWidth="5" strokeLinecap="round" />
+            <path d={`M ${mousePos.x - 14} ${mousePos.y - 8} A 16 16 0 0 1 ${mousePos.x - 2} ${mousePos.y - 20}`} stroke="white" strokeWidth="2" fill="none" opacity="0.4" strokeLinecap="round" />
+          </g>
+        )}
+      </svg>
+      
+      {!isHovered && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="bg-black/5 text-gray-500 font-bold text-xs px-4 py-2 rounded-full animate-bounce shadow-sm">
+            箱を探ってみよう 🔍
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+// ▲▲▲ 巨大木箱コンポーネントここまで ▲▲▲
+
 // ★ ここを Home から HomeContent に名前変更しました！
 function HomeContent() {
   const searchParams = useSearchParams(); 
@@ -246,92 +326,101 @@ function HomeContent() {
     <main className="min-h-screen bg-gray-50 pb-20">
       <Navbar />
 
-      <div className="bg-white border-b border-gray-200 pt-20 pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="flex-1 max-w-2xl">
-              <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter leading-none mb-6">
-                個人開発の<br/><span className="text-orange-600">「名作」</span>を発掘しよう。
-              </h1>
-              
-              <div className="relative w-full z-30 mb-4">
-                 <input 
-                   type="text" 
-                   value={searchQuery}
-                   onChange={(e) => setSearchQuery(e.target.value)}
-                   onKeyDown={handleKeyDown}
-                   placeholder="キーワード / #タグ (Enterで追加)" 
-                   className="w-full bg-gray-100 border-2 border-transparent focus:bg-white focus:border-black rounded-full py-4 px-6 font-bold text-lg !text-black placeholder:text-gray-500 outline-none transition-all shadow-sm"
-                   style={{ color: '#000000', opacity: 1 }} 
-                 />
-                 <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 text-xl">🔍</span>
+      {/* ▼▼▼ ここからヒーローセクション（赤丸のエリア） ▼▼▼ */}
+          <div className="bg-white border-b border-gray-200 pt-12 pb-16 overflow-hidden relative">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+                
+                {/* 左側：メインのテキストと検索バー */}
+                <div className="flex-1 max-w-2xl w-full relative z-20">
+                  <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter leading-none mb-6">
+                    個人開発の<br/><span className="text-orange-600">「名作」</span>を発掘しよう。
+                  </h1>
+                  
+                  <div className="relative w-full z-30 mb-4">
+                     <input 
+                       type="text" 
+                       value={searchQuery}
+                       onChange={(e) => setSearchQuery(e.target.value)}
+                       onKeyDown={handleKeyDown}
+                       placeholder="キーワード / #タグ (Enterで追加)" 
+                       className="w-full bg-gray-100 border-2 border-transparent focus:bg-white focus:border-black rounded-full py-4 px-6 font-bold text-lg text-black placeholder:text-gray-500 outline-none transition-all shadow-sm"
+                     />
+                     <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 text-xl">🔍</span>
 
-                 {showSuggestions && suggestedTags.length > 0 && (
-                   <div className="absolute top-full left-4 right-4 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2">
-                     <div className="px-4 py-2 bg-gray-50 text-xs font-bold text-gray-400 border-b border-gray-100 flex justify-between">
-                       <span>タグ候補</span>
-                       <span>選んで追加</span>
-                     </div>
-                     <div className="max-h-60 overflow-y-auto">
-                       {suggestedTags.map(tag => (
-                         <button
-                           key={tag}
-                           onClick={() => handleSelectTag(tag)}
-                           className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center justify-between transition-colors border-b border-gray-50 last:border-none group"
-                         >
-                           <span className="font-bold text-gray-700 group-hover:text-blue-700 text-base">#{tag}</span>
-                           <span className="text-gray-300 text-sm group-hover:text-blue-400">＋</span>
-                         </button>
-                       ))}
-                     </div>
-                   </div>
-                 )}
-              </div>
+                     {showSuggestions && suggestedTags.length > 0 && (
+                       <div className="absolute top-full left-4 right-4 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2">
+                         <div className="px-4 py-2 bg-gray-50 text-xs font-bold text-gray-400 border-b border-gray-100 flex justify-between">
+                           <span>タグ候補</span>
+                           <span>選んで追加</span>
+                         </div>
+                         <div className="max-h-60 overflow-y-auto">
+                           {suggestedTags.map(tag => (
+                             <button
+                               key={tag}
+                               onClick={() => handleSelectTag(tag)}
+                               className="w-full text-left px-5 py-3 hover:bg-blue-50 flex items-center justify-between transition-colors border-b border-gray-50 last:border-none group"
+                             >
+                               <span className="font-bold text-gray-700 group-hover:text-blue-700 text-base">#{tag}</span>
+                               <span className="text-gray-300 text-sm group-hover:text-blue-400">＋</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                     )}
+                  </div>
 
-              {/* ▼▼▼ 追加: 検索しなくても遊べる人気のカテゴリボタン ▼▼▼ */}
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="text-sm font-bold text-gray-400 mr-1">人気のカテゴリ:</span>
-                {['ゲーム', '便利ツール', 'SaaS', 'AI', '音楽・画像', 'Bot'].map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => handleSelectTag(tag)}
-                    className="px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all hover:-translate-y-0.5 active:translate-y-0 bg-white text-gray-600 border-gray-200 hover:border-black hover:text-black shadow-sm"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-              {/* ▲▲▲ 追加ここまで ▲▲▲ */}
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="text-sm font-bold text-gray-400 mr-1">人気のカテゴリ:</span>
+                    {['ゲーム', '便利ツール', 'SaaS', 'AI', '音楽・画像', 'Bot'].map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => handleSelectTag(tag)}
+                        className="px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all hover:-translate-y-0.5 active:translate-y-0 bg-white text-gray-600 border-gray-200 hover:border-black hover:text-black shadow-sm"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
 
-              {activeTags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {activeTags.map(tag => (
-                    <button 
-                      key={tag} 
-                      onClick={() => removeTag(tag)}
-                      className="bg-black text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 hover:bg-gray-800 transition-colors"
-                    >
-                      #{tag} <span className="text-xs">✕</span>
-                    </button>
-                  ))}
+                  {activeTags.length > 0 && (
+                     <div className="flex flex-wrap gap-2 mt-3 mb-6">
+                      {activeTags.map(tag => (
+                        <button 
+                          key={tag} 
+                          onClick={() => removeTag(tag)}
+                          className="bg-black text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 hover:bg-gray-800 transition-colors"
+                        >
+                          #{tag} <span className="text-xs">✕</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 bg-gray-50 px-5 py-4 rounded-xl border border-gray-200 shadow-sm inline-flex mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input 
+                        type="checkbox" 
+                        checked={filterOneTime}
+                        onChange={() => setFilterOneTime(!filterOneTime)}
+                        className="w-5 h-5 accent-orange-600 rounded cursor-pointer"
+                      />
+                      <span className="text-base font-bold text-gray-900">📦 買い切りのみ表示</span>
+                    </label>
+                  </div>
                 </div>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-2 bg-gray-50 px-5 py-4 rounded-xl border border-gray-200 shadow-sm md:mt-0 mt-4 self-start">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input 
-                  type="checkbox" 
-                  checked={filterOneTime}
-                  onChange={() => setFilterOneTime(!filterOneTime)}
-                  className="w-5 h-5 accent-orange-600 rounded cursor-pointer"
-                />
-                <span className="text-base font-bold text-gray-900">📦 買い切りのみ表示</span>
-              </label>
+
+                {/* 右側：巨大なインタラクティブ木箱（ご指定の赤丸エリアにドドンと配置！） */}
+                {/* ★ 隠れないように flex に修正し、後ろに光るエフェクトを追加しました ★ */}
+                <div className="flex justify-center items-center w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] lg:w-[450px] lg:h-[450px] relative z-10 mt-8 lg:mt-0 mx-auto">
+                  <div className="absolute inset-0 bg-orange-200 rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
+                  <InteractiveHeroBox />
+                </div>
+
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+          {/* ▲▲▲ ヒーローセクションここまで ▲▲▲ */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
@@ -358,54 +447,73 @@ function HomeContent() {
         </div>
 
         {/* ツール一覧 (現在のページ分だけ表示) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {currentTools.map((tool) => (
-            <Link href={`/tool/${tool.id}`} key={tool.id} className="block group h-full">
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-2xl hover:border-gray-300 transition-all duration-300 overflow-hidden h-full flex flex-col hover:-translate-y-1">
-                
-                <div className="h-48 bg-gray-50 overflow-hidden relative border-b border-gray-100">
-                  <ToolCardMedia src={tool.image_url} alt={tool.name} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4">
+          {currentTools.map((tool, index) => {
+            // ★ ランキング順位の計算
+            const rank = (currentPage - 1) * ITEMS_PER_PAGE + index + 1;
+            const isPopular = sortBy === 'popular';
+
+            return (
+              <Link href={`/tool/${tool.id}`} key={tool.id} className="block group h-full">
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-2xl hover:border-gray-300 transition-all duration-300 overflow-hidden h-full flex flex-col hover:-translate-y-1 relative">
                   
-                  <div className="absolute top-2 left-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded backdrop-blur font-black pointer-events-none">
-                     👀 {tool.view_count || 0}
+                  {/* ▼▼▼ 追加: 定番人気タブの時のランキングバッジ ▼▼▼ */}
+                  {isPopular && (
+                    <div className={`absolute -top-3 -left-3 flex items-center justify-center font-black text-white rounded-full z-20 shadow-lg border-2 border-white ${
+                      rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 w-14 h-14 text-2xl transform -rotate-12' :
+                      rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-400 w-12 h-12 text-xl transform -rotate-6' :
+                      rank === 3 ? 'bg-gradient-to-br from-orange-400 to-orange-500 w-12 h-12 text-xl transform rotate-6' :
+                      'bg-gray-800 w-10 h-10 text-base'
+                    }`}>
+                      {rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}
+                    </div>
+                  )}
+                  {/* ▲▲▲ 追加ここまで ▲▲▲ */}
+
+                  <div className="h-48 bg-gray-50 overflow-hidden relative border-b border-gray-100">
+                    <ToolCardMedia src={tool.image_url} alt={tool.name} />
+                    
+                    <div className="absolute top-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded backdrop-blur font-black pointer-events-none z-10">
+                       👀 {tool.view_count || 0}
+                    </div>
                   </div>
-                </div>
-                
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex flex-wrap gap-1 content-start">
-                      {Array.from(new Set(tool.plans?.map((p: any) => p.type) || [tool.price_model])).map((type: any) => (
-                        <span key={type} className={`inline-block px-2 py-1 text-[10px] font-black rounded uppercase tracking-wider border ${
-                          type === 'one_time' ? 'bg-orange-50 text-orange-900 border-orange-200' : 
-                          type === 'oss' ? 'bg-green-50 text-green-900 border-green-200' : 
-                          'bg-blue-50 text-blue-900 border-blue-200'
-                        }`}>
-                          {type === 'one_time' ? 'One-time' : type === 'subscription' ? 'Sub' : type}
-                        </span>
+                  
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex flex-wrap gap-1 content-start">
+                        {Array.from(new Set(tool.plans?.map((p: any) => p.type) || [tool.price_model])).map((type: any) => (
+                          <span key={type} className={`inline-block px-2 py-1 text-[10px] font-black rounded uppercase tracking-wider border ${
+                            type === 'one_time' ? 'bg-orange-50 text-orange-900 border-orange-200' : 
+                            type === 'oss' ? 'bg-green-50 text-green-900 border-green-200' : 
+                            'bg-blue-50 text-blue-900 border-blue-200'
+                          }`}>
+                            {type === 'one_time' ? 'One-time' : type === 'subscription' ? 'Sub' : type}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-xl font-black text-gray-900 whitespace-nowrap ml-2">
+                         {tool.price === 0 ? 'Free' : `¥${tool.price.toLocaleString()}`}
+                      </p>
+                    </div>
+
+                    <h3 className="text-xl font-black text-gray-900 mb-2 leading-tight group-hover:text-blue-700 transition-colors line-clamp-1">
+                      {tool.name}
+                    </h3>
+                    
+                    <p className="text-xs text-gray-700 font-bold line-clamp-2 min-h-[2.5em] mb-4 leading-relaxed">
+                      {tool.tagline}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-1 mt-auto">
+                      {tool.tags?.slice(0, 3).map((tag: string) => (
+                        <span key={tag} className="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-1 rounded border border-gray-200 group-hover:border-gray-300 transition-colors">#{tag}</span>
                       ))}
                     </div>
-                    <p className="text-xl font-black text-gray-900 whitespace-nowrap ml-2">
-                       {tool.price === 0 ? 'Free' : `¥${tool.price.toLocaleString()}`}
-                    </p>
-                  </div>
-
-                  <h3 className="text-xl font-black text-gray-900 mb-2 leading-tight group-hover:text-blue-700 transition-colors line-clamp-1">
-                    {tool.name}
-                  </h3>
-                  
-                  <p className="text-xs text-gray-700 font-bold line-clamp-2 min-h-[2.5em] mb-4 leading-relaxed">
-                    {tool.tagline}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-1 mt-auto">
-                    {tool.tags?.slice(0, 3).map((tag: string) => (
-                      <span key={tag} className="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-1 rounded border border-gray-200 group-hover:border-gray-300 transition-colors">#{tag}</span>
-                    ))}
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
 
         {!loading && sortedTools.length === 0 && (
